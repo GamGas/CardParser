@@ -5,10 +5,15 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Objects;
+import java.util.*;
+
+
+/**
+ * Данная программа парсит данные карт со скриншотов.
+ * Запуск производится через передачу ссылки к папке по аргументам
+ *
+ * В качестве аргумента можно указать данные в src/input/imgs
+ * */
 
 public class Main {
     private static final Color white = new Color(-1);
@@ -33,6 +38,7 @@ public class Main {
 
     }
 
+    //Корневой метод, который занимается парсингом данных и выводом в консоль результат работы.
     private static void parseFile(File file) throws IOException {
         StringBuilder sb = new StringBuilder();
         sb.append("На этой картинке: \"").append(file.getPath()).append("\"\n");
@@ -48,10 +54,13 @@ public class Main {
     }
 
     private static String getCardData(BufferedImage card) {
+        //Определить номинал карты на изображении, полученном в аргументах
         String nominale = getCardNominale(card);
+        //Определить масть карты.
         String suite = getCardSuite(card);
         return nominale + suite;
     }
+
 
     private static String getCardNominale(BufferedImage card) {
         int startX_num = 5, startY_num = 6, width_num = 33, height_num = 26;
@@ -60,10 +69,16 @@ public class Main {
     }
 
     private static String parseNominale(BufferedImage num) {
+        //Инициируем массив точек в номиналах карт, чтобы проверять изображение на совпадение
         Card[] cards = cardsInit();
         ArrayList<Card> cardList = new ArrayList<>();
+        //Помещаем карты в список, чтобы начать поиск с конца массива.
+
         Collections.addAll(cardList, cards);
         Collections.reverse(cardList);
+
+        //Проходим по массиву карт и ищем совпадения.
+        //Если количество точек совпало с количеством совпадений по пикселям, возвращаем совпадение
         for (Card card : cardList) {
             int matchCounter = 0;
             int pixelsLength = card.pixelsToMatch.length;
@@ -97,6 +112,14 @@ public class Main {
         return cards.toArray(outputCards);
     }
 
+    //Проверка изображения, присутствует ли на картинке карта вообще.
+    public static boolean isExist(BufferedImage im) {
+        int posX = im.getWidth() - 20;
+        int posY = im.getHeight() - 60;
+        return im.getRGB(posX, posY) == white.getRGB() || im.getRGB(posX, posY) == white_dark.getRGB();
+    }
+
+    //Базовый метод, для определения масти карты
     public static String getCardSuite(BufferedImage im) {
         int posX = im.getWidth() - 25;
         int posY = im.getHeight() - 25;
@@ -113,12 +136,7 @@ public class Main {
         return "NaN";
     }
 
-    public static boolean isExist(BufferedImage im) {
-        int posX = im.getWidth() - 20;
-        int posY = im.getHeight() - 60;
-        return im.getRGB(posX, posY) == white.getRGB() || im.getRGB(posX, posY) == white_dark.getRGB();
-    }
-
+    //Определитель, какая именно красная карта.
     public static String checkRed(BufferedImage im) {
         int posX = im.getWidth() - 24;
         int posY = im.getHeight() - 36;
@@ -129,6 +147,7 @@ public class Main {
         }
     }
 
+    //Определитель, какая именно чёрная карта.
     public static String checkBlack(BufferedImage im) {
         int posX = im.getWidth() - 17;
         int posY = im.getHeight() - 30;
@@ -139,6 +158,7 @@ public class Main {
         }
     }
 
+    // Установка карты точек для поиска совпадений номинала карт.
     public static Card[] cardsInit() {
         return new Card[]{
                 new Card("2", new MatchPixel[]{
@@ -274,14 +294,6 @@ public class Main {
                 new Card("10", new MatchPixel[]{
                         new MatchPixel(2, 4),
                         new MatchPixel(27, 19)
-//                        new MatchPixel(3, 4),
-//                        new MatchPixel(7, 3),
-//                        new MatchPixel(7, 6),
-//                        new MatchPixel(7, 9),
-//                        new MatchPixel(7, 12),
-//                        new MatchPixel(7, 16),
-//                        new MatchPixel(7, 19),
-//                        new MatchPixel(7, 22)
                 }),
                 new Card("J", new MatchPixel[]{
                         new MatchPixel(16, 3),
