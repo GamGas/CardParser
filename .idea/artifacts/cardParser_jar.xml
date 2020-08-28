@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="cardParser:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/cardParser_jar</output-path>
+    <root id="archive" name="cardParser.jar">
+      <element id="module-output" name="cardParser" />
+    </root>
+  </artifact>
+</component>
